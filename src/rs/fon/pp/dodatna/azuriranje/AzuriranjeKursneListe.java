@@ -11,11 +11,6 @@ import java.util.LinkedList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-
-
-
-
-
 import com.google.gson.JsonObject;
 
 import rs.fon.pp.dodatna.api.JsonAPIRatesKomunikacija;
@@ -27,7 +22,7 @@ public class AzuriranjeKursneListe {
 	
 	private static final String putanja = "data/valute.json";
 	
-	public LinkedList<Valuta> ucitajValute(Menjacnica m) {
+	public static LinkedList<Valuta> ucitajValute(Menjacnica m) {
 		
 		LinkedList<Valuta> valute = new LinkedList<Valuta>();
 			
@@ -43,7 +38,7 @@ public class AzuriranjeKursneListe {
 		return valute;		
 	}
 	
-	public void upisiValute(LinkedList<Valuta> valute, GregorianCalendar datum) {
+	public static void upisiValute(LinkedList<Valuta> valute, GregorianCalendar datum) {
 		JsonArray valuteJson = ValutaJsonUtil.serijalizujValute(valute, datum);
 		try {
 			PrintWriter out = new PrintWriter(new BufferedWriter(
@@ -59,15 +54,19 @@ public class AzuriranjeKursneListe {
 		}
 	}
 	
-	public void azurirajValute(Menjacnica m, JsonAPIRatesKomunikacija komunikacija) {
-		LinkedList<Valuta> valute = ucitajValute(m);
-		String[] nazivi = new String[valute.size()];
-		for (int i = 0; i < valute.size(); i++) {
-			nazivi[i] = valute.get(i).getNaziv();
+	public static void azurirajValute(Menjacnica m, JsonAPIRatesKomunikacija komunikacija) {
+		try {
+			LinkedList<Valuta> valute = ucitajValute(m);
+			String[] nazivi = new String[valute.size()];
+			for (int i = 0; i < valute.size(); i++) {
+				nazivi[i] = valute.get(i).getNaziv();
+			}
+			valute.clear();
+			valute = komunikacija.vratiIznosKurseva(nazivi);
+			upisiValute(valute, new GregorianCalendar());
+		} catch (Exception e) {
+			System.out.println("Greska - " + e.getMessage());
 		}
-		valute.clear();
-		valute = komunikacija.vratiIznosKurseva(nazivi);
-		upisiValute(valute, new GregorianCalendar());
 	}
 }
 
