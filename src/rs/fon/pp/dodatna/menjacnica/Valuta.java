@@ -1,8 +1,12 @@
 package rs.fon.pp.dodatna.menjacnica;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Valuta {
-	
+	@SerializedName ("naziv")
 	private String naziv;
+	
+	@SerializedName("kurs")
 	private double kurs;
 	
 	public String getNaziv() {

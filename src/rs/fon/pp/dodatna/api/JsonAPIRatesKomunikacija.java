@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 
@@ -36,16 +35,14 @@ public class JsonAPIRatesKomunikacija {
 				v.setKurs(jsonResult.get("rate").getAsDouble());
 				v.setNaziv(nazivi[i]);
 				valute.add(v);
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
+			} catch (Exception e) {
+				System.out.println("Greska - " + e.getMessage());
 			}
 		}
 		return valute;
 	}
 
-	private String sendGet(String url) throws IOException {
+	public String sendGet(String url) throws IOException {
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		
