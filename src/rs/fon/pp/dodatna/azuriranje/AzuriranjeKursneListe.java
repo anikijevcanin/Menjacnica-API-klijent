@@ -14,7 +14,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import rs.fon.pp.dodatna.api.JsonAPIRatesKomunikacija;
-import rs.fon.pp.dodatna.menjacnica.Menjacnica;
 import rs.fon.pp.dodatna.menjacnica.Valuta;
 import rs.fon.pp.dodatna.util.ValutaJsonUtil;
 
@@ -22,7 +21,7 @@ public class AzuriranjeKursneListe {
 	
 	private static final String putanja = "data/valute.json";
 	
-	public static LinkedList<Valuta> ucitajValute(Menjacnica m) {
+	public LinkedList<Valuta> ucitajValute() {
 		
 		LinkedList<Valuta> valute = new LinkedList<Valuta>();
 			
@@ -30,7 +29,14 @@ public class AzuriranjeKursneListe {
 			FileReader reader = new FileReader(putanja);
 			Gson gson = new GsonBuilder().create();
 			JsonObject menjacnica = gson.fromJson(reader, JsonObject.class);
-			valute = ValutaJsonUtil.parseValute((JsonArray) menjacnica.get("valute"));	
+			JsonArray valuteNiz = menjacnica.get("valute").getAsJsonArray();
+			for (int i = 0; i <valuteNiz.size() ; i++) {
+				Valuta v = new Valuta();
+				v.setKurs(valuteNiz.get(i).getAsJsonObject().get("kurs").getAsDouble());
+				v.setNaziv(valuteNiz.get(i).getAsJsonObject().get("naziv").getAsString());
+				valute.add(v);	
+			}
+			reader.close();
 
 		} catch (Exception e) {
 			System.out.println("Greska - " + e.getMessage());
@@ -38,14 +44,14 @@ public class AzuriranjeKursneListe {
 		return valute;		
 	}
 	
-	public static void upisiValute(LinkedList<Valuta> valute, GregorianCalendar datum) {
-		JsonArray valuteJson = ValutaJsonUtil.serijalizujValute(valute, datum);
+	public void upisiValute(LinkedList<Valuta> valute, GregorianCalendar datum) {
 		try {
+		
 			PrintWriter out = new PrintWriter(new BufferedWriter(
 					new FileWriter("data/valute.json")));
 		
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
-			String valuteString = gson.toJson(valuteJson);
+			String valuteString = gson.toJson((JsonObject) ValutaJsonUtil.serijalizujValute(valute, datum));
 			
 			out.println(valuteString);
 			out.close();
@@ -54,19 +60,22 @@ public class AzuriranjeKursneListe {
 		}
 	}
 	
-	public static void azurirajValute(Menjacnica m, JsonAPIRatesKomunikacija komunikacija) {
+	public void azurirajValute() {
 		try {
-			LinkedList<Valuta> valute = ucitajValute(m);
+			LinkedList<Valuta> valute = ucitajValute();
 			String[] nazivi = new String[valute.size()];
 			for (int i = 0; i < valute.size(); i++) {
 				nazivi[i] = valute.get(i).getNaziv();
 			}
+			LinkedList<Valuta> azuriraneValute = JsonAPIRatesKomunikacija.vratiIznosKurseva(nazivi);
 			valute.clear();
-			valute = komunikacija.vratiIznosKurseva(nazivi);
-			upisiValute(valute, new GregorianCalendar());
+			valute = azuriraneValute;
+			GregorianCalendar datum = new GregorianCalendar();
+			upisiValute(valute, datum);
 		} catch (Exception e) {
 			System.out.println("Greska - " + e.getMessage());
 		}
 	}
 }
+
 

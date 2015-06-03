@@ -10,9 +10,9 @@ import com.google.gson.JsonObject;
 
 public class ValutaJsonUtil {
 	
-	public static JsonArray serijalizujValute(LinkedList<Valuta> valute, GregorianCalendar datum) {
-		JsonObject menjacnica = new JsonObject();
+	public static JsonObject serijalizujValute(LinkedList<Valuta> valute, GregorianCalendar datum) {
 		JsonArray valuteJson = new JsonArray();
+		JsonObject objectJson = new JsonObject();
 		
 		String d = datum.get(GregorianCalendar.DAY_OF_MONTH) + "." +
 				(datum.get(GregorianCalendar.MONTH)-1) + "." +
@@ -25,11 +25,11 @@ public class ValutaJsonUtil {
 			valutaJson.addProperty("kurs", v.getKurs());
 			valuteJson.add(valutaJson);
 		}
-		menjacnica.addProperty("datum", d);
-		menjacnica.add("valute", valuteJson);
+		objectJson.addProperty("datum", d);
+		objectJson.add("valute", valuteJson);
 		
 		
-		return valuteJson;
+		return objectJson ;
 	}
 	
 	public static LinkedList<Valuta> parseValute(JsonArray valuteJson) {

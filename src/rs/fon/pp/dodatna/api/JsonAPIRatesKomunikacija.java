@@ -19,7 +19,7 @@ public class JsonAPIRatesKomunikacija {
 	private static final String appKey = "jr-ba8999934fc5a7ab64a4872fb4ed9af7";
 	private static final String jsonRatesURL = "http://jsonrates.com/get/";
 	
-	public LinkedList<Valuta> vratiIznosKurseva(String[] nazivi) {
+	public static LinkedList<Valuta> vratiIznosKurseva(String[] nazivi) {
 		LinkedList<Valuta> valute = new LinkedList<Valuta>();
 		for (int i = 0; i < nazivi.length; i++) {
 			String url = jsonRatesURL + "?" +
@@ -30,7 +30,7 @@ public class JsonAPIRatesKomunikacija {
 			try {
 				String result = sendGet(url);
 				Gson gson = new GsonBuilder().create();
-				JsonObject jsonResult = gson.fromJson(result, JsonObject.class);
+				JsonObject jsonResult = (JsonObject) gson.fromJson(result, JsonObject.class);
 				Valuta v = new Valuta();
 				v.setKurs(jsonResult.get("rate").getAsDouble());
 				v.setNaziv(nazivi[i]);
@@ -42,7 +42,7 @@ public class JsonAPIRatesKomunikacija {
 		return valute;
 	}
 
-	public String sendGet(String url) throws IOException {
+	private static String sendGet(String url) throws IOException {
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		
