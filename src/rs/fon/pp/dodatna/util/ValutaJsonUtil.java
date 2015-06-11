@@ -15,7 +15,7 @@ public class ValutaJsonUtil {
 		JsonObject objectJson = new JsonObject();
 		
 		String d = datum.get(GregorianCalendar.DAY_OF_MONTH) + "." +
-				(datum.get(GregorianCalendar.MONTH)-1) + "." +
+				(datum.get(GregorianCalendar.MONTH)+11) + "." +
 				(datum.get(GregorianCalendar.YEAR));
 
 		for (int i = 0; i < valute.size(); i++) {
